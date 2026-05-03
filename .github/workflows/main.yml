@@ -1,1 +1,32 @@
+name: Global_War_Engine
+on:
+  issues:
+    types: [opened]
+  schedule:
+    - cron: '0 * * * *' # Золото раз в час
+  workflow_dispatch:
 
+jobs:
+  update_world:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Game Logic
+        run: |
+          # Передаем заголовок Issue и имя игрока в скрипт
+          python engine.py "${{ github.event.issue.title }}" "${{ github.event.issue.user.login }}"
+      - name: Close Processed Order
+        if: github.event_name == 'issues'
+        run: gh issue close ${{ github.event.issue.number }} --comment "Штаб: Приказ выполнен, карта обновлена!"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push Updates
+        run: |
+          git config --global user.name 'Marshal-Bot'
+          git config --global user.email 'bot@github.com'
+          git add game_state.json
+          git commit -m "Frontline update: ${{ github.event.issue.title }}" || exit 0
+          git push
