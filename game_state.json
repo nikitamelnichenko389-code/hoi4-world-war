@@ -2,10 +2,70 @@
     "world_tension": 0,
     "players": {},
     "available_countries": {
-        "Россия": { "cities": ["Петроград", "Москва", "Киев"], "color": "#0057b7", "gold": 200, "factories": 2, "divisions": 5, "ships": 2, "dockyards": 1 },
-        "Германия": { "cities": ["Берлин", "Мюнхен", "Гамбург"], "color": "#333333", "gold": 200, "factories": 3, "divisions": 4, "ships": 3, "dockyards": 2 },
-        "Франция": { "cities": ["Париж", "Марсель", "Лион"], "color": "#ed2939", "gold": 200, "factories": 2, "divisions": 4, "ships": 2, "dockyards": 1 },
-        "Австрия": { "cities": ["Вена", "Будапешт", "Прага"], "color": "#ffd700", "gold": 200, "factories": 2, "divisions": 6, "ships": 0, "dockyards": 0 },
-        "Италия": { "cities": ["Рим", "Милан", "Венеция"], "color": "#008c45", "gold": 200, "factories": 1, "divisions": 3, "ships": 4, "dockyards": 2 }
+        "Россия": {
+            "cities": [
+                "Петроград",
+                "Москва",
+                "Киев"
+            ],
+            "color": "#0057b7",
+            "gold": 200,
+            "factories": 2,
+            "divisions": 5,
+            "ships": 2,
+            "dockyards": 1
+        },
+        "Германия": {
+            "cities": [
+                "Берлин",
+                "Мюнхен",
+                "Гамбург"
+            ],
+            "color": "#333333",
+            "gold": 200,
+            "factories": 3,
+            "divisions": 4,
+            "ships": 3,
+            "dockyards": 2
+        },
+        "Франция": {
+            "cities": [
+                "Париж",
+                "Марсель",
+                "Лион"
+            ],
+            "color": "#ed2939",
+            "gold": 200,
+            "factories": 2,
+            "divisions": 4,
+            "ships": 2,
+            "dockyards": 1
+        },
+        "Австрия": {
+            "cities": [
+                "Вена",
+                "Будапешт",
+                "Прага"
+            ],
+            "color": "#ffd700",
+            "gold": 200,
+            "factories": 2,
+            "divisions": 6,
+            "ships": 0,
+            "dockyards": 0
+        },
+        "Италия": {
+            "cities": [
+                "Рим",
+                "Милан",
+                "Венеция"
+            ],
+            "color": "#008c45",
+            "gold": 200,
+            "factories": 1,
+            "divisions": 3,
+            "ships": 4,
+            "dockyards": 2
+        }
     }
 }
