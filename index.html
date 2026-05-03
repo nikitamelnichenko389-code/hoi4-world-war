@@ -2,58 +2,83 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Генштаб: HoI4 GitHub</title>
+    <title>HoI4 GitHub: Global Front</title>
     <style>
-        body { background: #1b1c1f; color: #eee; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; }
-        .stats { background: #25282c; padding: 15px; border-bottom: 2px solid #444; position: sticky; top: 0; z-index: 100; }
-        .map { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
-        .city-card { 
-            border: 2px solid #444; padding: 15px; margin: 10px; 
-            border-radius: 8px; background: #2c3036; width: 200px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        .btn { 
-            display: inline-block; margin-top: 10px; padding: 8px 15px; 
-            background: #da3633; color: white; text-decoration: none; 
-            border-radius: 6px; font-size: 13px; font-weight: bold;
-        }
-        .btn:hover { background: #f85149; }
-        .gold { color: #ffd700; font-weight: bold; }
+        body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; margin: 0; text-align: center; }
+        .header { background: #161b22; padding: 25px; border-bottom: 1px solid #30363d; position: sticky; top: 0; z-index: 10; }
+        .stats-grid { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
+        .p-stat { background: #21262d; padding: 10px 20px; border-radius: 6px; border: 1px solid #30363d; font-size: 14px; }
+        .map { display: flex; flex-wrap: wrap; justify-content: center; padding: 30px; gap: 20px; }
+        .city-card { border: 1px solid #30363d; padding: 20px; border-radius: 10px; background: #161b22; width: 200px; transition: 0.3s; }
+        .city-card:hover { border-color: #58a6ff; transform: translateY(-5px); }
+        .reg-box { background: #0d1117; padding: 40px; margin: 20px; border: 2px dashed #238636; border-radius: 12px; }
+        .controls { background: #161b22; padding: 30px; border-top: 1px solid #30363d; }
+        .btn { display: inline-block; padding: 12px 18px; margin: 5px; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 13px; }
+        .btn-reg { background: #238636; }
+        .btn-atk { background: #da3633; }
+        .btn-build { background: #21262d; border: 1px solid #30363d; }
+        .btn-build:hover { background: #30363d; }
+        .gold { color: #d29922; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="stats" id="stats">Загрузка данных разведки...</div>
-    <h1>🗺️ ТЕАТР ВОЕННЫХ ДЕЙСТВИЙ</h1>
+    <div class="header">
+        <h1>🌍 HEARTS OF GITHUB: GLOBAL FRONT</h1>
+        <div id="stats" class="stats-grid"></div>
+    </div>
+
+    <div id="reg-zone" class="reg-box" style="display:none;">
+        <h2>🎖️ МОБИЛИЗАЦИЯ: ВЫБЕРИТЕ ДЕРЖАВУ</h2>
+        <div id="available-list" style="margin-top: 20px;"></div>
+    </div>
+
     <div class="map" id="map"></div>
 
-    <script>
-        // АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ ПУТИ (замени на свой ник если ссылка не заработает)
-        const REPO_NAME = "nikitamelnichenko389-code/hoi4-world-war";
-        const ISSUE_URL = `https://github.com/${REPO_NAME}/issues/new`;
+    <div class="controls">
+        <h3>🏠 ГЕНЕРАЛЬНЫЙ ШТАБ</h3>
+        <a id="b-div" href="#" class="btn btn-build">🪖 Дивизия (50£)</a>
+        <a id="b-fac" href="#" class="btn btn-build">🏭 Фабрика (150£)</a>
+        <a id="b-ship" href="#" class="btn btn-build">⚓ Корабль (100£)</a>
+    </div>
 
-        fetch('game_state.json?t=' + Date.now())
-            .then(r => r.json())
-            .then(data => {
-                const map = document.getElementById('map');
-                const stats = document.getElementById('stats');
-                stats.innerHTML = "";
+    <script>
+        const REPO = "nikitamelnichenko389-code/hoi4-world-war";
+        const ISSUE = `https://github.com/${REPO}/issues/new`;
+
+        fetch('game_state.json?t=' + Date.now()).then(r => r.json()).then(data => {
+            const map = document.getElementById('map');
+            const stats = document.getElementById('stats');
+            const regZone = document.getElementById('reg-zone');
+            const aList = document.getElementById('available-list');
+
+            // Привязка кнопок действий
+            document.getElementById('b-div').href = `${ISSUE}?title=BUILD_DIV&body=Confirm_Order`;
+            document.getElementById('b-fac').href = `${ISSUE}?title=BUILD_FAC&body=Confirm_Order`;
+            document.getElementById('b-ship').href = `${ISSUE}?title=BUILD_SHIP&body=Confirm_Order`;
+
+            // Обработка регистрации
+            const avail = Object.keys(data.available_countries);
+            if (avail.length > 0) {
+                regZone.style.display = "block";
+                avail.forEach(c => {
+                    aList.innerHTML += `<a href="${ISSUE}?title=REGISTER:${c}&body=I_take_command" class="btn btn-reg">${c}</a>`;
+                });
+            }
+
+            // Статистика и Карта
+            for (let user in data.players) {
+                let p = data.players[user];
+                stats.innerHTML += `<div class="p-stat" style="border-top: 3px solid ${p.color}"><b>${user}</b> (${p.country_name})<br><span class="gold">${p.gold}£</span> | 🪖${p.divisions} | 🏭${p.factories}</div>`;
                 
-                for (let name in data.players) {
-                    let p = data.players[name];
-                    stats.innerHTML += `<span>👤 <b>${name}</b>: <span class="gold">${p.gold} £</span> | </span>`;
-                    
-                    p.cities.forEach(city => {
-                        const attackUrl = `${ISSUE_URL}?title=ATTACK:${city}&body=Приказ_от_командующего`;
-                        map.innerHTML += `
-                            <div class="city-card">
-                                🏰 <b>${city}</b><br>
-                                <small>Фракция: ${p.country}</small><br>
-                                <a href="${attackUrl}" target="_blank" class="btn">⚔️ АТАКОВАТЬ</a>
-                            </div>`;
-                    });
-                }
-            });
+                p.cities.forEach(city => {
+                    map.innerHTML += `
+                        <div class="city-card" style="border-bottom: 4px solid ${p.color}">
+                            <b>${city}</b><br><small>${p.country_name}</small><br><br>
+                            <a href="${ISSUE}?title=ATTACK:${city}&body=Execute_Attack" class="btn btn-atk">⚔️ АТАКОВАТЬ</a>
+                        </div>`;
+                });
+            }
+        });
     </script>
 </body>
 </html>
-
