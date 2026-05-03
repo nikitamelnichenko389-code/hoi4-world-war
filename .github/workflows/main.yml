@@ -3,30 +3,29 @@ on:
   issues:
     types: [opened]
   schedule:
-    - cron: '0 * * * *' # Золото раз в час
+    - cron: '0 * * * *' # Начисление золота каждый час
   workflow_dispatch:
 
 jobs:
-  update_world:
+  run:
     runs-on: ubuntu-latest
     permissions:
       contents: write
       issues: write
     steps:
       - uses: actions/checkout@v3
-      - name: Run Game Logic
+      - name: Execute Game Logic
         run: |
-          # Передаем заголовок Issue и имя игрока в скрипт
           python engine.py "${{ github.event.issue.title }}" "${{ github.event.issue.user.login }}"
-      - name: Close Processed Order
+      - name: Auto-Close Issue
         if: github.event_name == 'issues'
-        run: gh issue close ${{ github.event.issue.number }} --comment "Штаб: Приказ выполнен, карта обновлена!"
+        run: gh issue close ${{ github.event.issue.number }} --comment "Приказ принят и обработан Генеральным Штабом."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Push Updates
+      - name: Commit State Changes
         run: |
           git config --global user.name 'Marshal-Bot'
           git config --global user.email 'bot@github.com'
           git add game_state.json
-          git commit -m "Frontline update: ${{ github.event.issue.title }}" || exit 0
+          git commit -m "Frontline Update: ${{ github.event.issue.title }}" || exit 0
           git push
