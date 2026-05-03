@@ -2,35 +2,58 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Генштаб: Глобальная Карта</title>
+    <title>Генштаб: HoI4 GitHub</title>
     <style>
-        body { background: #1a1c1f; color: #eee; font-family: sans-serif; }
-        .container { max-width: 800px; margin: auto; padding: 20px; }
-        .city-card { border: 1px solid #444; padding: 15px; margin: 10px; border-radius: 5px; background: #25282c; display: inline-block; width: 200px; }
+        body { background: #1b1c1f; color: #eee; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; }
+        .stats { background: #25282c; padding: 15px; border-bottom: 2px solid #444; position: sticky; top: 0; z-index: 100; }
+        .map { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
+        .city-card { 
+            border: 2px solid #444; padding: 15px; margin: 10px; 
+            border-radius: 8px; background: #2c3036; width: 200px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .btn { 
+            display: inline-block; margin-top: 10px; padding: 8px 15px; 
+            background: #da3633; color: white; text-decoration: none; 
+            border-radius: 6px; font-size: 13px; font-weight: bold;
+        }
+        .btn:hover { background: #f85149; }
         .gold { color: #ffd700; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🌍 Карта Мира (GitHub Edition)</h1>
-        <div id="stats"></div>
-        <hr>
-        <div id="map"></div>
-    </div>
+    <div class="stats" id="stats">Загрузка данных разведки...</div>
+    <h1>🗺️ ТЕАТР ВОЕННЫХ ДЕЙСТВИЙ</h1>
+    <div class="map" id="map"></div>
+
     <script>
-        fetch('game_state.json?t=' + Date.now()) // ?t= для обхода кэша
+        // АВТОМАТИЧЕСКОЕ ОПРЕДЕЛЕНИЕ ПУТИ (замени на свой ник если ссылка не заработает)
+        const REPO_NAME = "nikitamelnichenko389-code/hoi4-world-war";
+        const ISSUE_URL = `https://github.com/${REPO_NAME}/issues/new`;
+
+        fetch('game_state.json?t=' + Date.now())
             .then(r => r.json())
             .then(data => {
                 const map = document.getElementById('map');
                 const stats = document.getElementById('stats');
+                stats.innerHTML = "";
+                
                 for (let name in data.players) {
                     let p = data.players[name];
-                    stats.innerHTML += `<p>👤 ${name} (${p.country}): <span class="gold">${p.gold} £</span></p>`;
+                    stats.innerHTML += `<span>👤 <b>${name}</b>: <span class="gold">${p.gold} £</span> | </span>`;
+                    
                     p.cities.forEach(city => {
-                        map.innerHTML += `<div class="city-card">🏰 ${city}<br><small>${p.country}</small></div>`;
+                        const attackUrl = `${ISSUE_URL}?title=ATTACK:${city}&body=Приказ_от_командующего`;
+                        map.innerHTML += `
+                            <div class="city-card">
+                                🏰 <b>${city}</b><br>
+                                <small>Фракция: ${p.country}</small><br>
+                                <a href="${attackUrl}" target="_blank" class="btn">⚔️ АТАКОВАТЬ</a>
+                            </div>`;
                     });
                 }
             });
     </script>
 </body>
 </html>
+
